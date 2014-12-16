@@ -1,10 +1,11 @@
-package lib
+package me.apidoc.avro
 
-import scala.io.Source
+import java.io.File
 import org.apache.avro.{Protocol, Schema}
 import org.apache.avro.compiler.idl.Idl
 import scala.collection.JavaConversions._
-import java.io.File
+import scala.collection.mutable.ListBuffer
+import play.api.libs.json.JsValue
 
 sealed trait SchemaType
 object SchemaType {
@@ -34,39 +35,40 @@ object SchemaType {
 
 }
 
-object Parser {
+case class Parser() {
 
-  //val is = Source.fromURL(getClass.getResource("/mobile-tapstream.avpr"))
-  //println("RES: " + getClass.getResource("/mobile-tapstream.avpr"))
+  private val enums = ListBuffer[JsValue]()
+  private val models = ListBuffer[JsValue]()
 
-  private val schemaParser = {
-    val p = new Schema.Parser()
-    p.setValidate(true)
-    p.setValidateDefaults(true)
-    p
+  def parse(path: String) {
+    println(s"parse($path)")
+
+    val protocol = parseProtocol(path)
+    println("name: " + protocol.getName)
+    println("namespace: " + protocol.getNamespace)
+
+    protocol.getTypes.foreach { schema =>
+      println("--")
+      parseSchema(schema)
+    }
   }
 
-  def parseSchema(path: String) {
-    val schema = schemaParser.parse(new java.io.File(path))
-    debug(schema)
-  }
 
-  private def debug(schema: Schema) {
+  private def parseSchema(schema: Schema) {
     println("name: " + schema.getName)
     println("namespace: " + schema.getNamespace)
     println("fullName: " + schema.getFullName)
     println("type: " + schema.getType)
 
-    SchemaType.fromAvro(schema.getType) match {
-      case None => {
-        sys.error(s"Unsupported schema type[${schema.getType}]")
-      }
-      case Some(SchemaType.Record) => {
+    SchemaType.fromAvro(schema.getType).getOrElse {
+      sys.error(s"Unsupported schema type[${schema.getType}]")
+    } match {
+      case SchemaType.Record => {
         schema.getFields.foreach { field =>
           println("FIELD: " + field)
         }
       }
-      case Some(other) => {
+      case other => {
         println(s"TODO: Support $other")
       }
     }
@@ -76,25 +78,17 @@ object Parser {
     //}
   }
 
-  def parseIdl(path: String) {
-    println(s"parseIdl($path)")
-    val protocol = new Idl(new File(path)).CompilationUnit()
-    debug(protocol)
-  }
+  private def parseProtocol(
+    path: String
+  ): Protocol = {
+    if (path.endsWith(".avdl")) {
+      new Idl(new File(path)).CompilationUnit()
 
-  def parseProtocol(path: String) {
-    println(s"parseProtocol($path)")
-    val protocol = Protocol.parse(new java.io.File(path))
-    debug(protocol)
-  }
+    } else if (path.endsWith(".avpr")) {
+      Protocol.parse(new java.io.File(path))
 
-  def debug(protocol: Protocol) {
-    println("name: " + protocol.getName)
-    println("namespace: " + protocol.getNamespace)
-
-    protocol.getTypes.foreach { schema =>
-      println("--")
-      debug(schema)
+    } else {
+      sys.error("Unrecognized file extension for path[$path]")
     }
   }
 
