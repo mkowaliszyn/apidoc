@@ -5,7 +5,7 @@ import org.apache.avro.{Protocol, Schema}
 import org.apache.avro.compiler.idl.Idl
 import scala.collection.JavaConversions._
 import scala.collection.mutable.ListBuffer
-import play.api.libs.json.{Json, JsValue}
+import play.api.libs.json.{Json, JsBoolean, JsObject, JsString, JsValue}
 
 private[avro] case class Builder() {
 
@@ -29,13 +29,19 @@ object Apidoc {
 
   def field(field: Schema.Field): JsValue = {
     val t = Apidoc.getType(field.schema)
+    val doc = Util.toOption(field.doc)
 
-    Json.obj(
-      "name" -> field.name,
-      "description" -> Util.toOption(field.doc),
-      "required" -> t.required,
-      "type" -> t.name
-    )
+    val params = Seq(
+      Some("name" -> JsString(field.name)),
+      t.required match {
+        case true => None
+        case false => Some("required" -> JsBoolean(false))
+      },
+      Some("type" -> JsString(t.name)),
+      Util.toOption(field.doc).map { v => "description" -> JsString(v) }
+    ).flatten
+
+    play.api.libs.json.JsObject(params)
   }
 
   def getType(schema: Schema): Type = {
