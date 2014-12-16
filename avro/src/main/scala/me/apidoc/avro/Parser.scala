@@ -120,7 +120,7 @@ case class Parser() {
     SchemaType.fromAvro(schema.getType) match {
       case None => sys.error(s"Unsupported schema type[${schema.getType}]")
       case Some(st) => {
-        println("PARSING st[$st]")
+        println(s"PARSING st[$st]")
         val result = st.parse(builder, schema)
         println(result)
       }
