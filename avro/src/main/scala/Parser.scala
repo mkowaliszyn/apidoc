@@ -64,6 +64,9 @@ object Parser {
           println("FIELD: " + field)
         }
       }
+      case Some(other) => {
+        println(s"TODO: Support $other")
+      }
     }
 
     //schema.getTypes.foreach { t =>
