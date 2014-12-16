@@ -2,7 +2,9 @@ package lib
 
 import scala.io.Source
 import org.apache.avro.{Protocol, Schema}
+import org.apache.avro.compiler.idl.Idl
 import scala.collection.JavaConversions._
+import java.io.File
 
 sealed trait SchemaType
 object SchemaType {
@@ -74,10 +76,19 @@ object Parser {
     //}
   }
 
+  def parseIdl(path: String) {
+    println(s"parseIdl($path)")
+    val protocol = new Idl(new File(path)).CompilationUnit()
+    debug(protocol)
+  }
 
   def parseProtocol(path: String) {
     println(s"parseProtocol($path)")
     val protocol = Protocol.parse(new java.io.File(path))
+    debug(protocol)
+  }
+
+  def debug(protocol: Protocol) {
     println("name: " + protocol.getName)
     println("namespace: " + protocol.getNamespace)
 

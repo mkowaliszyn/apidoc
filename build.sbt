@@ -14,12 +14,15 @@ lazy val lib = project
   .in(file("lib"))
   .settings(commonSettings: _*)
 
+val avroVersion = "1.7.7"
+
 lazy val avro = project
   .in(file("avro"))
   .settings(
     libraryDependencies ++= Seq(
-      "org.apache.avro" % "avro" % "1.7.7",
-      "org.scalatest" %% "scalatest" % "2.2.0" % "test"
+      "org.apache.avro"  % "avro"              % avroVersion,
+      "org.apache.avro"  % "avro-compiler"     % avroVersion,
+      "org.scalatest"    %% "scalatest" % "2.2.0" % "test"
     )
   )
 
