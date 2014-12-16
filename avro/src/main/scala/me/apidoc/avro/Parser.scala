@@ -43,12 +43,18 @@ private[avro] case class Builder() {
     )
   }
 
-  def addFixed(name: String, description: Option[String]) {
+  /**
+    * Avro supports fixed types in the schema which is a way of
+    * extending the type system. apidoc doesn't have support for that;
+    * the best we can do is to create a model representing the fixed
+    * element.
+    */
+  def addFixed(name: String, description: Option[String], size: Int) {
     addModel(
       name = name,
       description = description,
       fields = Seq(
-        Apidoc.Field(name = "value", typeName = "string")
+        Apidoc.Field(name = "value", typeName = "string", maximum = Some(size))
       )
     )
   }
@@ -113,7 +119,8 @@ case class Parser() {
   private def parseFixed(schema: Schema) {
     builder.addFixed(
       name = schema.getName,
-      description = Util.toOption(schema.getDoc)
+      description = Util.toOption(schema.getDoc),
+      size = schema.getFixedSize()
     )
   }
 

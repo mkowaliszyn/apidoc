@@ -2,7 +2,7 @@ package me.apidoc.avro
 
 import org.apache.avro.Schema
 import scala.collection.JavaConversions._
-import play.api.libs.json.{JsBoolean, JsObject, JsString}
+import play.api.libs.json.{JsBoolean, JsNumber, JsObject, JsString}
 
 object Apidoc {
 
@@ -15,7 +15,9 @@ object Apidoc {
     name: String,
     typeName: String,
     description: Option[String] = None,
-    required: Boolean = true
+    required: Boolean = true,
+    minimum: Option[Long] = None,
+    maximum: Option[Long] = None
   ) {
 
     val jsValue = JsObject(
@@ -26,7 +28,9 @@ object Apidoc {
           case false => Some("required" -> JsBoolean(false))
         },
         Some("type" -> JsString(typeName)),
-        description.map { v => "description" -> JsString(v) }
+        description.map { v => "description" -> JsString(v) },
+        minimum.map { v => "minimum" -> JsNumber(v) },
+        maximum.map { v => "maximum" -> JsNumber(v) }
       ).flatten
     )
 
