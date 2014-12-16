@@ -1,0 +1,1481 @@
+{
+  "protocol": "MobileTapstream",
+  "namespace": "com.gilt.mobile.tapstream.v3",
+  "types": [
+    {
+      "type": "fixed",
+      "name": "UUID",
+      "namespace": "gfc.avro",
+      "size": 16
+    },
+    {
+      "type": "record",
+      "name": "Money",
+      "namespace": "gfc.avro",
+      "fields": [
+        {
+          "name": "amount",
+          "type": "double"
+        },
+        {
+          "name": "currencyIso4217Code",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "type": "record",
+      "name": "ConversionRate",
+      "namespace": "gfc.avro",
+      "fields": [
+        {
+          "name": "sourceCurrencyIso4217Code",
+          "type": "string"
+        },
+        {
+          "name": "targetCurrencyIso4217Code",
+          "type": "string"
+        },
+        {
+          "name": "rate",
+          "type": "double"
+        }
+      ]
+    },
+    {
+      "type": "record",
+      "name": "GlobalizedMoney",
+      "namespace": "gfc.avro",
+      "fields": [
+        {
+          "name": "local",
+          "type": "Money"
+        },
+        {
+          "name": "conversion",
+          "type": "ConversionRate"
+        },
+        {
+          "name": "global",
+          "type": "Money"
+        }
+      ]
+    },
+    {
+      "type": "enum",
+      "name": "ActionResult",
+      "symbols": [
+        "Success",
+        "Failure",
+        "SystemFailure"
+      ]
+    },
+    {
+      "type": "enum",
+      "name": "AuthMethod",
+      "symbols": [
+        "Other",
+        "Gilt",
+        "Facebook",
+        "IcloudKeychain"
+      ]
+    },
+    {
+      "type": "enum",
+      "name": "Channel",
+      "symbols": [
+        "Other",
+        "CityIphone",
+        "CityMobileWeb",
+        "GiltAndroid",
+        "GiltCom",
+        "GiltIpad",
+        "GiltIpadSafari",
+        "GiltIphone",
+        "GiltMobileWeb",
+        "GiltcityCom"
+      ]
+    },
+    {
+      "type": "enum",
+      "name": "ConnectionType",
+      "symbols": [
+        "Other",
+        "Carrier",
+        "Wifi"
+      ]
+    },
+    {
+      "type": "enum",
+      "name": "DeviceOrientation",
+      "symbols": [
+        "Landscape",
+        "Portrait"
+      ]
+    },
+    {
+      "type": "enum",
+      "name": "LaunchMethod",
+      "symbols": [
+        "Other",
+        "DeepLink",
+        "Launcher",
+        "Notification"
+      ]
+    },
+    {
+      "type": "enum",
+      "name": "Store",
+      "symbols": [
+        "Other",
+        "Children",
+        "City",
+        "Gifts",
+        "Home",
+        "Men",
+        "MyGilt",
+        "Women"
+      ]
+    },
+    {
+      "type": "record",
+      "name": "ParentPageViewedEvent",
+      "fields": [
+        {
+          "name": "uuid",
+          "type": "gfc.avro.UUID"
+        },
+        {
+          "name": "name",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "type": "record",
+      "name": "ActionEvent",
+      "doc": "Fields common to all events of type action.\n      NOTE: this should not be sent as is, meant to be wrapped into some more specific type",
+      "fields": [
+        {
+          "name": "parentPageViewedEvent",
+          "type": [
+            "null",
+            "ParentPageViewedEvent"
+          ],
+          "doc": "The (optional) page viewed event on which this action was taken",
+          "default": null
+        }
+      ]
+    },
+    {
+      "type": "record",
+      "name": "Advertising",
+      "fields": [
+        {
+          "name": "id",
+          "type": "string"
+        },
+        {
+          "name": "limitAdTracking",
+          "type": "boolean",
+          "default": false
+        }
+      ]
+    },
+    {
+      "type": "record",
+      "name": "Application",
+      "doc": "Fields to track application information",
+      "fields": [
+        {
+          "name": "id",
+          "type": "string"
+        },
+        {
+          "name": "installationGuid",
+          "type": "gfc.avro.UUID"
+        },
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "version",
+          "type": "string"
+        },
+        {
+          "name": "channel",
+          "type": [
+            "null",
+            "Channel"
+          ],
+          "default": null
+        }
+      ]
+    },
+    {
+      "type": "record",
+      "name": "Attribute",
+      "fields": [
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "value",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "type": "record",
+      "name": "Campaign",
+      "fields": [
+        {
+          "name": "name",
+          "type": [
+            "null",
+            "string"
+          ],
+          "default": null
+        },
+        {
+          "name": "source",
+          "type": [
+            "null",
+            "string"
+          ],
+          "default": null
+        },
+        {
+          "name": "medium",
+          "type": [
+            "null",
+            "string"
+          ],
+          "default": null
+        },
+        {
+          "name": "keywords",
+          "type": [
+            "null",
+            "string"
+          ],
+          "default": null
+        },
+        {
+          "name": "content",
+          "type": [
+            "null",
+            "string"
+          ],
+          "default": null
+        },
+        {
+          "name": "id",
+          "type": [
+            "null",
+            "string"
+          ],
+          "default": null
+        }
+      ]
+    },
+    {
+      "type": "record",
+      "name": "Device",
+      "doc": "Fields to track device information",
+      "fields": [
+        {
+          "name": "brand",
+          "type": "string"
+        },
+        {
+          "name": "model",
+          "type": "string"
+        },
+        {
+          "name": "type",
+          "type": "string"
+        },
+        {
+          "name": "resolution",
+          "type": "string"
+        },
+        {
+          "name": "screenSize",
+          "type": "string"
+        },
+        {
+          "name": "nativeUserAgent",
+          "type": "string"
+        },
+        {
+          "name": "viewportSize",
+          "type": "string"
+        },
+        {
+          "name": "timeOffset",
+          "type": "long"
+        }
+      ]
+    },
+    {
+      "type": "record",
+      "name": "Experiment",
+      "doc": "Fields to track experiments",
+      "fields": [
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "variant",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "type": "record",
+      "name": "Network",
+      "doc": "Fields to track network related parameters",
+      "fields": [
+        {
+          "name": "connectionType",
+          "type": [
+            "null",
+            "ConnectionType"
+          ],
+          "default": null
+        },
+        {
+          "name": "carrierName",
+          "type": [
+            "null",
+            "string"
+          ],
+          "default": null
+        }
+      ]
+    },
+    {
+      "type": "record",
+      "name": "OperatingSystem",
+      "doc": "Fields to track operating system information",
+      "fields": [
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "version",
+          "type": "string"
+        },
+        {
+          "name": "locale",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "type": "record",
+      "name": "PageViewedEvent",
+      "doc": "Fields common to all events of type page_viewed.\n      NOTE: this should not be sent as is, meant to be wrapped into some more specific type",
+      "fields": [
+        {
+          "name": "deviceOrientation",
+          "type": "DeviceOrientation"
+        },
+        {
+          "name": "url",
+          "type": "string"
+        },
+        {
+          "name": "title",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "type": "record",
+      "name": "Session",
+      "fields": [
+        {
+          "name": "startedAt",
+          "type": "long"
+        },
+        {
+          "name": "visitorGuid",
+          "type": "gfc.avro.UUID"
+        }
+      ]
+    },
+    {
+      "type": "record",
+      "name": "Variant",
+      "fields": [
+        {
+          "name": "name",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "type": "record",
+      "name": "MobileEvent",
+      "doc": "Fields common to all events generated by mobile apps.\n      NOTE: this should not be sent as is, meant to be wrapped into some more specific type",
+      "fields": [
+        {
+          "name": "headers",
+          "type": {
+            "type": "array",
+            "items": "Attribute"
+          },
+          "doc": "The HTTP headers of the request the event was sent in.\n        NOTE: This attribute should NOT be set by the client, it will be set by the server",
+          "default": []
+        },
+        {
+          "name": "batchGuid",
+          "type": "gfc.avro.UUID",
+          "doc": "NOTE: This attribute should NOT be set by the client, it will be set by the server.\n        The unique identifier assigned to a batch of events.\n        Events that share this value were submitted by a client as part of the same batch",
+          "default": "\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000"
+        },
+        {
+          "name": "eventTs",
+          "type": "long",
+          "doc": "The unix timestamp at which the event occurred.\n        This is in Gilt time (not device time)"
+        },
+        {
+          "name": "device",
+          "type": "Device"
+        },
+        {
+          "name": "os",
+          "type": "OperatingSystem"
+        },
+        {
+          "name": "app",
+          "type": "Application"
+        },
+        {
+          "name": "session",
+          "type": "Session"
+        },
+        {
+          "name": "experiments",
+          "type": {
+            "type": "map",
+            "values": "Variant"
+          },
+          "default": {}
+        },
+        {
+          "name": "userGuid",
+          "type": [
+            "null",
+            "gfc.avro.UUID"
+          ],
+          "default": null
+        },
+        {
+          "name": "advertising",
+          "type": [
+            "null",
+            "Advertising"
+          ],
+          "default": null
+        },
+        {
+          "name": "campaign",
+          "type": [
+            "null",
+            "Campaign"
+          ],
+          "default": null
+        },
+        {
+          "name": "network",
+          "type": [
+            "null",
+            "Network"
+          ],
+          "default": null
+        }
+      ]
+    },
+    {
+      "type": "record",
+      "name": "Sku",
+      "fields": [
+        {
+          "name": "id",
+          "type": "long"
+        }
+      ]
+    },
+    {
+      "type": "record",
+      "name": "CartSku",
+      "fields": [
+        {
+          "name": "sku",
+          "type": "Sku"
+        },
+        {
+          "name": "channel",
+          "type": [
+            "null",
+            "Channel"
+          ],
+          "default": null
+        },
+        {
+          "name": "lookId",
+          "type": [
+            "null",
+            "long"
+          ],
+          "default": null
+        },
+        {
+          "name": "price",
+          "type": [
+            "null",
+            "gfc.avro.GlobalizedMoney"
+          ],
+          "default": null
+        },
+        {
+          "name": "productId",
+          "type": [
+            "null",
+            "long"
+          ],
+          "default": null
+        },
+        {
+          "name": "saleId",
+          "type": [
+            "null",
+            "long"
+          ],
+          "default": null
+        },
+        {
+          "name": "store",
+          "type": [
+            "null",
+            "Store"
+          ],
+          "default": null
+        }
+      ]
+    },
+    {
+      "type": "record",
+      "name": "Look",
+      "fields": [
+        {
+          "name": "id",
+          "type": "long"
+        },
+        {
+          "name": "skus",
+          "type": {
+            "type": "array",
+            "items": "Sku"
+          }
+        }
+      ]
+    },
+    {
+      "type": "record",
+      "name": "AccountPageViewedEvent",
+      "fields": [
+        {
+          "name": "uuid",
+          "type": "gfc.avro.UUID"
+        },
+        {
+          "name": "base",
+          "type": "MobileEvent"
+        },
+        {
+          "name": "page",
+          "type": "PageViewedEvent"
+        }
+      ]
+    },
+    {
+      "type": "record",
+      "name": "AccountSelectedActionEvent",
+      "fields": [
+        {
+          "name": "uuid",
+          "type": "gfc.avro.UUID"
+        },
+        {
+          "name": "base",
+          "type": "MobileEvent"
+        },
+        {
+          "name": "action",
+          "type": "ActionEvent"
+        }
+      ]
+    },
+    {
+      "type": "record",
+      "name": "AddToCartActionEvent",
+      "fields": [
+        {
+          "name": "uuid",
+          "type": "gfc.avro.UUID"
+        },
+        {
+          "name": "base",
+          "type": "MobileEvent"
+        },
+        {
+          "name": "action",
+          "type": "ActionEvent"
+        },
+        {
+          "name": "cartId",
+          "type": "string"
+        },
+        {
+          "name": "cartSku",
+          "type": "CartSku"
+        },
+        {
+          "name": "quantity",
+          "type": "int"
+        }
+      ]
+    },
+    {
+      "type": "record",
+      "name": "AddToCartResultActionEvent",
+      "fields": [
+        {
+          "name": "uuid",
+          "type": "gfc.avro.UUID"
+        },
+        {
+          "name": "base",
+          "type": "MobileEvent"
+        },
+        {
+          "name": "action",
+          "type": "ActionEvent"
+        },
+        {
+          "name": "result",
+          "type": "ActionResult"
+        },
+        {
+          "name": "resultCode",
+          "type": [
+            "null",
+            "string"
+          ],
+          "default": null
+        },
+        {
+          "name": "cartSku",
+          "type": [
+            "null",
+            "CartSku"
+          ],
+          "default": null
+        },
+        {
+          "name": "quantityAdded",
+          "type": [
+            "null",
+            "int"
+          ],
+          "default": null
+        }
+      ]
+    },
+    {
+      "type": "record",
+      "name": "AddToWaitlistActionEvent",
+      "fields": [
+        {
+          "name": "uuid",
+          "type": "gfc.avro.UUID"
+        },
+        {
+          "name": "base",
+          "type": "MobileEvent"
+        },
+        {
+          "name": "action",
+          "type": "ActionEvent"
+        },
+        {
+          "name": "cartSku",
+          "type": "CartSku"
+        },
+        {
+          "name": "quantity",
+          "type": "int"
+        }
+      ]
+    },
+    {
+      "type": "record",
+      "name": "AppLaunchedActionEvent",
+      "doc": "This event is fired every time the app is launched (regardless of\n      whether the app was in the background or it was a fresh launch)",
+      "fields": [
+        {
+          "name": "uuid",
+          "type": "gfc.avro.UUID"
+        },
+        {
+          "name": "base",
+          "type": "MobileEvent"
+        },
+        {
+          "name": "action",
+          "type": "ActionEvent"
+        },
+        {
+          "name": "launchMethod",
+          "type": "LaunchMethod"
+        },
+        {
+          "name": "launchUrl",
+          "type": [
+            "null",
+            "string"
+          ],
+          "default": null
+        }
+      ]
+    },
+    {
+      "type": "record",
+      "name": "CartPageViewedEvent",
+      "fields": [
+        {
+          "name": "uuid",
+          "type": "gfc.avro.UUID"
+        },
+        {
+          "name": "base",
+          "type": "MobileEvent"
+        },
+        {
+          "name": "page",
+          "type": "PageViewedEvent"
+        }
+      ]
+    },
+    {
+      "type": "record",
+      "name": "ChangeCartItemQuantityActionEvent",
+      "fields": [
+        {
+          "name": "uuid",
+          "type": "gfc.avro.UUID"
+        },
+        {
+          "name": "base",
+          "type": "MobileEvent"
+        },
+        {
+          "name": "action",
+          "type": "ActionEvent"
+        },
+        {
+          "name": "currentQuantity",
+          "type": "int"
+        },
+        {
+          "name": "desiredQuantity",
+          "type": "int"
+        },
+        {
+          "name": "cartSku",
+          "type": "CartSku"
+        }
+      ]
+    },
+    {
+      "type": "record",
+      "name": "ChangeCartItemQuantityResultActionEvent",
+      "fields": [
+        {
+          "name": "uuid",
+          "type": "gfc.avro.UUID"
+        },
+        {
+          "name": "base",
+          "type": "MobileEvent"
+        },
+        {
+          "name": "action",
+          "type": "ActionEvent"
+        },
+        {
+          "name": "result",
+          "type": "ActionResult"
+        },
+        {
+          "name": "resultCode",
+          "type": [
+            "null",
+            "string"
+          ],
+          "default": null
+        },
+        {
+          "name": "cartSku",
+          "type": [
+            "null",
+            "CartSku"
+          ],
+          "default": null
+        },
+        {
+          "name": "quantityAdded",
+          "type": [
+            "null",
+            "int"
+          ],
+          "default": null
+        }
+      ]
+    },
+    {
+      "type": "record",
+      "name": "CheckoutActionEvent",
+      "fields": [
+        {
+          "name": "uuid",
+          "type": "gfc.avro.UUID"
+        },
+        {
+          "name": "base",
+          "type": "MobileEvent"
+        },
+        {
+          "name": "action",
+          "type": "ActionEvent"
+        },
+        {
+          "name": "cartSkus",
+          "type": {
+            "type": "array",
+            "items": "CartSku"
+          }
+        },
+        {
+          "name": "subtotal",
+          "type": "gfc.avro.GlobalizedMoney"
+        }
+      ]
+    },
+    {
+      "type": "record",
+      "name": "LookSelectedActionEvent",
+      "fields": [
+        {
+          "name": "uuid",
+          "type": "gfc.avro.UUID"
+        },
+        {
+          "name": "base",
+          "type": "MobileEvent"
+        },
+        {
+          "name": "action",
+          "type": "ActionEvent"
+        },
+        {
+          "name": "lookId",
+          "type": "long"
+        },
+        {
+          "name": "productId",
+          "type": "long"
+        },
+        {
+          "name": "skus",
+          "type": {
+            "type": "array",
+            "items": "Sku"
+          }
+        },
+        {
+          "name": "saleId",
+          "type": [
+            "null",
+            "long"
+          ],
+          "default": null
+        },
+        {
+          "name": "selectedSize",
+          "type": [
+            "null",
+            "string"
+          ],
+          "default": null
+        },
+        {
+          "name": "selectedSku",
+          "type": [
+            "null",
+            "Sku"
+          ],
+          "default": null
+        },
+        {
+          "name": "store",
+          "type": [
+            "null",
+            "Store"
+          ],
+          "default": null
+        }
+      ]
+    },
+    {
+      "type": "record",
+      "name": "NamedActionEvent",
+      "fields": [
+        {
+          "name": "uuid",
+          "type": "gfc.avro.UUID"
+        },
+        {
+          "name": "base",
+          "type": "MobileEvent"
+        },
+        {
+          "name": "action",
+          "type": "ActionEvent"
+        },
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "parameters",
+          "type": {
+            "type": "map",
+            "values": "string"
+          },
+          "default": {}
+        }
+      ]
+    },
+    {
+      "type": "record",
+      "name": "NamedPageViewedEvent",
+      "fields": [
+        {
+          "name": "uuid",
+          "type": "gfc.avro.UUID"
+        },
+        {
+          "name": "base",
+          "type": "MobileEvent"
+        },
+        {
+          "name": "page",
+          "type": "PageViewedEvent"
+        },
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "parameters",
+          "type": {
+            "type": "map",
+            "values": "string"
+          },
+          "default": {}
+        }
+      ]
+    },
+    {
+      "type": "record",
+      "name": "ProductPageViewedEvent",
+      "fields": [
+        {
+          "name": "uuid",
+          "type": "gfc.avro.UUID"
+        },
+        {
+          "name": "base",
+          "type": "MobileEvent"
+        },
+        {
+          "name": "page",
+          "type": "PageViewedEvent"
+        },
+        {
+          "name": "looks",
+          "type": {
+            "type": "array",
+            "items": "Look"
+          }
+        },
+        {
+          "name": "productId",
+          "type": "long"
+        },
+        {
+          "name": "saleId",
+          "type": [
+            "null",
+            "long"
+          ],
+          "default": null
+        },
+        {
+          "name": "selectedLook",
+          "type": [
+            "null",
+            "Look"
+          ],
+          "default": null
+        },
+        {
+          "name": "selectedSku",
+          "type": [
+            "null",
+            "Sku"
+          ],
+          "default": null
+        },
+        {
+          "name": "store",
+          "type": [
+            "null",
+            "Store"
+          ],
+          "default": null
+        }
+      ]
+    },
+    {
+      "type": "record",
+      "name": "RegisterActionEvent",
+      "fields": [
+        {
+          "name": "uuid",
+          "type": "gfc.avro.UUID"
+        },
+        {
+          "name": "base",
+          "type": "MobileEvent"
+        },
+        {
+          "name": "action",
+          "type": "ActionEvent"
+        },
+        {
+          "name": "registerMethod",
+          "type": "AuthMethod"
+        }
+      ]
+    },
+    {
+      "type": "record",
+      "name": "RegisterPageViewedEvent",
+      "fields": [
+        {
+          "name": "uuid",
+          "type": "gfc.avro.UUID"
+        },
+        {
+          "name": "base",
+          "type": "MobileEvent"
+        },
+        {
+          "name": "page",
+          "type": "PageViewedEvent"
+        }
+      ]
+    },
+    {
+      "type": "record",
+      "name": "RegisterResultActionEvent",
+      "fields": [
+        {
+          "name": "uuid",
+          "type": "gfc.avro.UUID"
+        },
+        {
+          "name": "base",
+          "type": "MobileEvent"
+        },
+        {
+          "name": "action",
+          "type": "ActionEvent"
+        },
+        {
+          "name": "result",
+          "type": "ActionResult"
+        },
+        {
+          "name": "resultCode",
+          "type": [
+            "null",
+            "string"
+          ],
+          "default": null
+        }
+      ]
+    },
+    {
+      "type": "record",
+      "name": "RegisterSelectedActionEvent",
+      "fields": [
+        {
+          "name": "uuid",
+          "type": "gfc.avro.UUID"
+        },
+        {
+          "name": "base",
+          "type": "MobileEvent"
+        },
+        {
+          "name": "action",
+          "type": "ActionEvent"
+        }
+      ]
+    },
+    {
+      "type": "record",
+      "name": "SaleExposedActionEvent",
+      "doc": "This event is fired when a sale tile is visible to the user",
+      "fields": [
+        {
+          "name": "uuid",
+          "type": "gfc.avro.UUID"
+        },
+        {
+          "name": "base",
+          "type": "MobileEvent"
+        },
+        {
+          "name": "action",
+          "type": "ActionEvent"
+        },
+        {
+          "name": "saleId",
+          "type": "long"
+        },
+        {
+          "name": "position",
+          "type": [
+            "null",
+            "long"
+          ],
+          "default": null
+        },
+        {
+          "name": "store",
+          "type": [
+            "null",
+            "Store"
+          ],
+          "default": null
+        }
+      ]
+    },
+    {
+      "type": "record",
+      "name": "SalePageViewedEvent",
+      "fields": [
+        {
+          "name": "uuid",
+          "type": "gfc.avro.UUID"
+        },
+        {
+          "name": "base",
+          "type": "MobileEvent"
+        },
+        {
+          "name": "page",
+          "type": "PageViewedEvent"
+        },
+        {
+          "name": "saleId",
+          "type": "long"
+        },
+        {
+          "name": "store",
+          "type": [
+            "null",
+            "Store"
+          ],
+          "default": null
+        }
+      ]
+    },
+    {
+      "type": "record",
+      "name": "SaleSelectedActionEvent",
+      "fields": [
+        {
+          "name": "uuid",
+          "type": "gfc.avro.UUID"
+        },
+        {
+          "name": "base",
+          "type": "MobileEvent"
+        },
+        {
+          "name": "action",
+          "type": "ActionEvent"
+        },
+        {
+          "name": "saleId",
+          "type": "long"
+        },
+        {
+          "name": "store",
+          "type": [
+            "null",
+            "Store"
+          ],
+          "default": null
+        }
+      ]
+    },
+    {
+      "type": "record",
+      "name": "SignInActionEvent",
+      "fields": [
+        {
+          "name": "uuid",
+          "type": "gfc.avro.UUID"
+        },
+        {
+          "name": "base",
+          "type": "MobileEvent"
+        },
+        {
+          "name": "action",
+          "type": "ActionEvent"
+        },
+        {
+          "name": "authMethod",
+          "type": "AuthMethod"
+        }
+      ]
+    },
+    {
+      "type": "record",
+      "name": "SignInPageViewedEvent",
+      "fields": [
+        {
+          "name": "uuid",
+          "type": "gfc.avro.UUID"
+        },
+        {
+          "name": "base",
+          "type": "MobileEvent"
+        },
+        {
+          "name": "page",
+          "type": "PageViewedEvent"
+        }
+      ]
+    },
+    {
+      "type": "record",
+      "name": "SignInResultActionEvent",
+      "fields": [
+        {
+          "name": "uuid",
+          "type": "gfc.avro.UUID"
+        },
+        {
+          "name": "base",
+          "type": "MobileEvent"
+        },
+        {
+          "name": "action",
+          "type": "ActionEvent"
+        },
+        {
+          "name": "result",
+          "type": "ActionResult"
+        },
+        {
+          "name": "resultCode",
+          "type": [
+            "null",
+            "string"
+          ],
+          "default": null
+        }
+      ]
+    },
+    {
+      "type": "record",
+      "name": "SignInSelectedActionEvent",
+      "fields": [
+        {
+          "name": "uuid",
+          "type": "gfc.avro.UUID"
+        },
+        {
+          "name": "base",
+          "type": "MobileEvent"
+        },
+        {
+          "name": "action",
+          "type": "ActionEvent"
+        }
+      ]
+    },
+    {
+      "type": "record",
+      "name": "SignOutActionEvent",
+      "fields": [
+        {
+          "name": "uuid",
+          "type": "gfc.avro.UUID"
+        },
+        {
+          "name": "base",
+          "type": "MobileEvent"
+        },
+        {
+          "name": "action",
+          "type": "ActionEvent"
+        }
+      ]
+    },
+    {
+      "type": "record",
+      "name": "SizeSelectedActionEvent",
+      "fields": [
+        {
+          "name": "uuid",
+          "type": "gfc.avro.UUID"
+        },
+        {
+          "name": "base",
+          "type": "MobileEvent"
+        },
+        {
+          "name": "action",
+          "type": "ActionEvent"
+        },
+        {
+          "name": "lookId",
+          "type": "long"
+        },
+        {
+          "name": "productId",
+          "type": "long"
+        },
+        {
+          "name": "size",
+          "type": "string"
+        },
+        {
+          "name": "sku",
+          "type": "Sku"
+        },
+        {
+          "name": "saleId",
+          "type": [
+            "null",
+            "long"
+          ],
+          "default": null
+        },
+        {
+          "name": "store",
+          "type": [
+            "null",
+            "Store"
+          ],
+          "default": null
+        }
+      ]
+    },
+    {
+      "type": "record",
+      "name": "StoreInteractedActionEvent",
+      "doc": "This event is fired when a store is interacted with (e.g. scrolled or sale tapped",
+      "fields": [
+        {
+          "name": "uuid",
+          "type": "gfc.avro.UUID"
+        },
+        {
+          "name": "base",
+          "type": "MobileEvent"
+        },
+        {
+          "name": "action",
+          "type": "ActionEvent"
+        },
+        {
+          "name": "store",
+          "type": "Store"
+        }
+      ]
+    },
+    {
+      "type": "record",
+      "name": "StorePageViewedEvent",
+      "fields": [
+        {
+          "name": "uuid",
+          "type": "gfc.avro.UUID"
+        },
+        {
+          "name": "base",
+          "type": "MobileEvent"
+        },
+        {
+          "name": "page",
+          "type": "PageViewedEvent"
+        },
+        {
+          "name": "store",
+          "type": "Store"
+        }
+      ]
+    },
+    {
+      "type": "record",
+      "name": "StoreSelectedActionEvent",
+      "fields": [
+        {
+          "name": "uuid",
+          "type": "gfc.avro.UUID"
+        },
+        {
+          "name": "base",
+          "type": "MobileEvent"
+        },
+        {
+          "name": "action",
+          "type": "ActionEvent"
+        },
+        {
+          "name": "store",
+          "type": "Store"
+        }
+      ]
+    }
+  ],
+  "messages": {}
+}

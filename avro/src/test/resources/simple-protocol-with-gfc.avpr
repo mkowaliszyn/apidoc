@@ -1,0 +1,26 @@
+{
+  "protocol": "test",
+  "namespace": "com.gilt.test.v1",
+  "types": [
+    {
+      "type": "fixed",
+      "name": "UUID",
+      "namespace": "gfc.avro",
+      "size": 16
+    },
+    {
+      "type": "record",
+      "name": "Money",
+      "fields": [
+        {
+          "name": "amount",
+          "type": "double"
+        },
+        {
+          "name": "currencyIso4217Code",
+          "type": "string"
+        }
+      ]
+    }
+  ]
+}

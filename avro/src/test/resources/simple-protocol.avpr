@@ -1,0 +1,20 @@
+{
+  "protocol": "test",
+  "namespace": "com.gilt.test.v1",
+  "types": [
+    {
+      "type": "record",
+      "name": "Money",
+      "fields": [
+        {
+          "name": "amount",
+          "type": "double"
+        },
+        {
+          "name": "currencyIso4217Code",
+          "type": "string"
+        }
+      ]
+    }
+  ]
+}
