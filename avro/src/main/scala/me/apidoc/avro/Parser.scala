@@ -4,7 +4,6 @@ import java.io.File
 import org.apache.avro.{Protocol, Schema}
 import org.apache.avro.compiler.idl.Idl
 import scala.collection.JavaConversions._
-import scala.collection.mutable.ListBuffer
 import play.api.libs.json.{Json, JsArray, JsObject, JsString, JsValue}
 
 private[avro] case class Builder() {
