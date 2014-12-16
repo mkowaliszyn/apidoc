@@ -98,8 +98,6 @@ case class Parser() {
 
 
   private def parseSchema(schema: Schema) {
-    println(s"schema name[${schema.getName}] namespace[${schema.getNamespace}]")
-
     SchemaType.fromAvro(schema.getType) match {
       case None => sys.error(s"Unsupported schema type[${schema.getType}]")
       case Some(st) => {
