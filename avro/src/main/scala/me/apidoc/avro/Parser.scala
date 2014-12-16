@@ -109,10 +109,10 @@ object Apidoc {
           case Nil => sys.error("union must have at least 1 type")
           case t :: Nil => getType(t)
           case t1 :: t2 :: Nil => {
-            if (t1.getType == SchemaType.Null) {
+            if (SchemaType.fromAvro(t1.getType) == Some(SchemaType.Null)) {
               getType(t2).copy(required = false)
 
-            } else if (t2.getType == SchemaType.Null) {
+            } else if (SchemaType.fromAvro(t2.getType) == Some(SchemaType.Null)) {
               getType(t1).copy(required = false)
 
             } else {
