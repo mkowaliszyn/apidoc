@@ -8,12 +8,10 @@ class ParserSpec extends FunSpec with Matchers {
 
   it("parses") {
     //Parser().parse(s"$dir/mobile-tapstream.avpr")
-    //Parser().parse(s"$dir/simple.avpr")
-    //Parser().parse(s"$dir/simple-protocol.avpr")
+    Parser().parse(s"$dir/simple-protocol.avpr")
     //Parser().parse(s"$dir/simple-protocol-with-gfc.avpr")
     //Parser().parse(s"$dir/mobile-tapstream.avpr")
-
-    Parser().parse(s"$dir/gfc-avro.avdl")
+    //Parser().parse(s"$dir/gfc-avro.avdl")
   }
 
 }
