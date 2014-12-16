@@ -5,17 +5,49 @@ import org.apache.avro.{Protocol, Schema}
 import org.apache.avro.compiler.idl.Idl
 import scala.collection.JavaConversions._
 import scala.collection.mutable.ListBuffer
-import play.api.libs.json.{Json, JsBoolean, JsObject, JsString, JsValue}
+import play.api.libs.json.{Json, JsArray, JsBoolean, JsObject, JsString, JsValue}
 
 private[avro] case class Builder() {
 
-  val enums = ListBuffer[JsValue]()
-  val models = ListBuffer[JsValue]()
+  private val enums = ListBuffer[JsValue]()
+  private val models = ListBuffer[JsValue]()
+
+  def toApiJson(
+    name: String,
+    baseUrl: String
+  ): JsValue = {
+    JsObject(
+      Seq(
+        Some("name" -> JsString(name)),
+        Some("base_url" -> JsString(baseUrl)),
+        enums.toList match {
+          case Nil => None
+          case data => Some("enums" -> JsArray(data))
+        },
+        models.toList match {
+          case Nil => None
+          case data => Some("models" -> JsArray(data))
+        }
+      ).flatten
+    )
+  }
+
+  def addModel(name: String, description: Option[String], fields: Seq[JsValue]) {
+    models.add(
+      JsObject(
+        Seq(
+          Some("name" -> JsString(name)),
+          description.map { v => "description" -> JsString(v) },
+          Some("fields" -> JsArray(fields))
+        ).flatten
+      )
+    )
+  }
 
 }
 
 sealed trait SchemaType {
-  def parse(builder: Builder, schema: Schema): JsValue = {
+  def parse(builder: Builder, schema: Schema) {
     sys.error("Parse not supported")
   }
 }
@@ -31,17 +63,17 @@ object Apidoc {
     val t = Apidoc.getType(field.schema)
     val doc = Util.toOption(field.doc)
 
-    val params = Seq(
-      Some("name" -> JsString(field.name)),
-      t.required match {
-        case true => None
-        case false => Some("required" -> JsBoolean(false))
-      },
-      Some("type" -> JsString(t.name)),
-      Util.toOption(field.doc).map { v => "description" -> JsString(v) }
-    ).flatten
-
-    play.api.libs.json.JsObject(params)
+    JsObject(
+      Seq(
+        Some("name" -> JsString(field.name)),
+        t.required match {
+          case true => None
+          case false => Some("required" -> JsBoolean(false))
+        },
+        Some("type" -> JsString(t.name)),
+        Util.toOption(field.doc).map { v => "description" -> JsString(v) }
+      ).flatten
+    )
   }
 
   def getType(schema: Schema): Type = {
@@ -102,15 +134,15 @@ object SchemaType {
 
   case object Record extends SchemaType {
 
-    override def parse(builder: Builder, schema: Schema): JsValue = {
-      Json.obj(
-        "name" -> schema.getName,
-        "description" -> Util.toOption(schema.getDoc),
-        "fields" -> schema.getFields.map(Apidoc.field(_))
+    override def parse(builder: Builder, schema: Schema) {
+      builder.addModel(
+        name = schema.getName,
+        description = Util.toOption(schema.getDoc),
+        fields = schema.getFields.map(Apidoc.field(_))
       )
     }
-  }
 
+  }
   case object String extends SchemaType
   case object Union extends SchemaType
 
@@ -132,28 +164,30 @@ case class Parser() {
     println(s"parse($path)")
 
     val protocol = parseProtocol(path)
-    println("name: " + protocol.getName)
-    println("namespace: " + protocol.getNamespace)
+    println(s"protocol name[${protocol.getName}] namespace[${protocol.getNamespace}]")
 
     protocol.getTypes.foreach { schema =>
-      println("--")
       parseSchema(schema)
     }
+
+    println(
+      builder.toApiJson(
+        name = protocol.getName,
+        baseUrl = "http://localhost"
+      )
+    )
+
   }
 
 
   private def parseSchema(schema: Schema) {
-    println("name: " + schema.getName)
-    println("namespace: " + schema.getNamespace)
-    println("fullName: " + schema.getFullName)
-    println("type: " + schema.getType)
+    println(s"schema name[${schema.getName}] namespace[${schema.getNamespace}]")
 
     SchemaType.fromAvro(schema.getType) match {
       case None => sys.error(s"Unsupported schema type[${schema.getType}]")
       case Some(st) => {
-        println(s"PARSING st[$st]")
-        val result = st.parse(builder, schema)
-        println(result)
+        println(s"PARSING schema type[$st]")
+        st.parse(builder, schema)
       }
     }
   }
