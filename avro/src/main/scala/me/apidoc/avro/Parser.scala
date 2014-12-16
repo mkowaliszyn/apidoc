@@ -20,6 +20,55 @@ sealed trait SchemaType {
   }
 }
 
+object Apidoc {
+
+  case class Type(
+    name: String,
+    required: Boolean = true
+  )
+
+  def getType(schema: Schema): Type = {
+    SchemaType.fromAvro(schema.getType).getOrElse {
+      sys.error(s"Unsupported schema type[${schema.getType}]")
+    } match {
+      case SchemaType.Array => Type("[%s]".format(getType(schema.getElementType).name))
+      case SchemaType.Boolean => Type("boolean")
+      case SchemaType.Bytes => sys.error("apidoc does not support bytes type")
+      case SchemaType.Double => Type("double")
+      case SchemaType.Enum => Type(schema.getName)
+      case SchemaType.Fixed => Type("decimal")
+      case SchemaType.Float => Type("double")
+      case SchemaType.Int => Type("integer")
+      case SchemaType.Long => Type("long")
+      case SchemaType.Map => Type("map[%s]".format(getType(schema.getValueType).name))
+      case SchemaType.Null => Type("unit")
+      case SchemaType.String => Type("string")
+      case SchemaType.Union => {
+        schema.getTypes.toList match {
+          case Nil => sys.error("union must have at least 1 type")
+          case t :: Nil => getType(t)
+          case t1 :: t2 :: Nil => {
+            if (t1.getType == SchemaType.Null) {
+              getType(t2).copy(required = false)
+
+            } else if (t2.getType == SchemaType.Null) {
+              getType(t1).copy(required = false)
+
+            } else {
+              sys.error("apidoc does not support union types: " + Seq(t1, t2).map(_.getType).mkString(", "))
+            }
+          }
+          case types => {
+            sys.error("apidoc does not support union types: " + types.map(_.getType).mkString(", "))
+          }
+        }
+      }
+      case SchemaType.Record => Type(schema.getName)
+    }
+  }
+
+}
+
 object SchemaType {
 
   case object Array extends SchemaType
@@ -38,30 +87,13 @@ object SchemaType {
 
     override def parse(builder: Builder, schema: Schema): JsValue = {
       val fields = schema.getFields.map { field =>
-        val (apidocType, required) = SchemaType.fromAvro(field.schema.getType).getOrElse {
-          sys.error(s"Unsupported schema type[${field.schema.getType}] for field[${field.name}]")
-        } match {
-          case Array => sys.error("TODO")
-          case Boolean => ("boolean", true)
-          case Bytes => sys.error("apidoc does not support bytes type")
-          case Double => ("double", true)
-          case Enum => sys.error("TODO")
-          case Fixed => ("decimal", true)
-          case Float => ("double", true)
-          case Int => ("integer", true)
-          case Long => ("long", true)
-          case Map => sys.error("TODO")
-          case Null => ("unit", true)
-          case String => ("string", true)
-          case Union => sys.error("TODO")
-          case Record => (field.schema.getName, true)
-        }
+        val t = Apidoc.getType(field.schema)
 
         Json.obj(
           "name" -> field.name,
           "description" -> toOption(field.doc),
-          "required" -> required,
-          "type" -> apidocType
+          "required" -> t.required,
+          "type" -> t.name
         )
       }
 
