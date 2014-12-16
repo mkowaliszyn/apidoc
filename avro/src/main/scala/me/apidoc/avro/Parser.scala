@@ -9,8 +9,8 @@ import play.api.libs.json.{Json, JsArray, JsBoolean, JsObject, JsString, JsValue
 
 private[avro] case class Builder() {
 
-  private val enums = ListBuffer[JsValue]()
-  private val models = ListBuffer[JsValue]()
+  private val enums = scala.collection.mutable.Map[String, JsValue]()
+  private val models = scala.collection.mutable.Map[String, JsValue]()
 
   def toApiJson(
     name: String,
@@ -22,23 +22,35 @@ private[avro] case class Builder() {
         Some("base_url" -> JsString(baseUrl)),
         enums.toList match {
           case Nil => None
-          case data => Some("enums" -> JsArray(data))
+          case data => Some("enums" -> JsObject(data))
         },
         models.toList match {
           case Nil => None
-          case data => Some("models" -> JsArray(data))
+          case data => Some("models" -> JsObject(data))
         }
       ).flatten
     )
   }
 
   def addModel(name: String, description: Option[String], fields: Seq[JsValue]) {
-    models.add(
+    models += (name ->
       JsObject(
         Seq(
-          Some("name" -> JsString(name)),
           description.map { v => "description" -> JsString(v) },
           Some("fields" -> JsArray(fields))
+        ).flatten
+      )
+    )
+  }
+
+  def addEnum(name: String, description: Option[String], values: Seq[String]) {
+    enums += (name ->
+      JsObject(
+        Seq(
+          description.map { v => "description" -> JsString(v) },
+          Some(
+            "values" -> JsArray(values.map { value => Json.obj("name" -> value) })
+          )
         ).flatten
       )
     )
@@ -48,7 +60,7 @@ private[avro] case class Builder() {
 
 sealed trait SchemaType {
   def parse(builder: Builder, schema: Schema) {
-    sys.error("Parse not supported")
+    sys.error("Parse not supported: " + getClass)
   }
 }
 
@@ -124,7 +136,17 @@ object SchemaType {
   case object Boolean extends SchemaType
   case object Bytes extends SchemaType
   case object Double extends SchemaType
-  case object Enum extends SchemaType
+
+  case object Enum extends SchemaType {
+    override def parse(builder: Builder, schema: Schema) {
+      builder.addEnum(
+        name = schema.getName,
+        description = Util.toOption(schema.getDoc),
+        values = schema.getEnumSymbols
+      )
+    }
+  }
+
   case object Fixed extends SchemaType
   case object Float extends SchemaType
   case object Int extends SchemaType
