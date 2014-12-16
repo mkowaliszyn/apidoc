@@ -27,6 +27,17 @@ object Apidoc {
     required: Boolean = true
   )
 
+  def field(field: Schema.Field): JsValue = {
+    val t = Apidoc.getType(field.schema)
+
+    Json.obj(
+      "name" -> field.name,
+      "description" -> Util.toOption(field.doc),
+      "required" -> t.required,
+      "type" -> t.name
+    )
+  }
+
   def getType(schema: Schema): Type = {
     SchemaType.fromAvro(schema.getType).getOrElse {
       sys.error(s"Unsupported schema type[${schema.getType}]")
@@ -86,21 +97,10 @@ object SchemaType {
   case object Record extends SchemaType {
 
     override def parse(builder: Builder, schema: Schema): JsValue = {
-      val fields = schema.getFields.map { field =>
-        val t = Apidoc.getType(field.schema)
-
-        Json.obj(
-          "name" -> field.name,
-          "description" -> toOption(field.doc),
-          "required" -> t.required,
-          "type" -> t.name
-        )
-      }
-
       Json.obj(
         "name" -> schema.getName,
-        "description" -> toOption(schema.getDoc),
-        "fields" -> fields
+        "description" -> Util.toOption(schema.getDoc),
+        "fields" -> schema.getFields.map(Apidoc.field(_))
       )
     }
   }
@@ -116,13 +116,6 @@ object SchemaType {
   def fromAvro(avroType: org.apache.avro.Schema.Type) = fromString(avroType.toString)
   def fromString(value: String): Option[SchemaType] = byName.get(value.toLowerCase)
 
-  def toOption(value: String): Option[String] = {
-    if (value == null || value.trim.isEmpty) {
-      None
-    } else {
-      Some(value.trim)
-    }
-  }
 }
 
 case class Parser() {
