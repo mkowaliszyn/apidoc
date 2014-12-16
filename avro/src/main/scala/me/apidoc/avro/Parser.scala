@@ -116,11 +116,11 @@ object Apidoc {
               getType(t1).copy(required = false)
 
             } else {
-              sys.error("apidoc does not support union types: " + Seq(t1, t2).map(_.getType).mkString(", "))
+              sys.error("apidoc does not support union types w/ more then 1 non null type: " + Seq(t1, t2).map(_.getType).mkString(", "))
             }
           }
           case types => {
-            sys.error("apidoc does not support union types: " + types.map(_.getType).mkString(", "))
+            sys.error("apidoc does not support union types w/ more then 1 non null type: " + types.map(_.getType).mkString(", "))
           }
         }
       }
@@ -208,8 +208,17 @@ case class Parser() {
     SchemaType.fromAvro(schema.getType) match {
       case None => sys.error(s"Unsupported schema type[${schema.getType}]")
       case Some(st) => {
-        println(s"PARSING schema type[$st]")
-        st.parse(builder, schema)
+        st match {
+          case SchemaType.Record | SchemaType.Enum => {
+            st.parse(builder, schema)
+          }
+          case SchemaType.Fixed => {
+            println("WARNING: skipping schema of type fixed")
+          }
+          case SchemaType.Array | SchemaType.Boolean | SchemaType.Bytes | SchemaType.Double | SchemaType.Float | SchemaType.Int | SchemaType.Long | SchemaType.Map | SchemaType.String | SchemaType.Union | SchemaType.Null => {
+            sys.error(s"Unexpected avro type[$st]")
+          }
+        }
       }
     }
   }
