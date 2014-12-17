@@ -40,7 +40,7 @@ object Apidoc {
     def apply(field: Schema.Field): Field = {
       val t = Apidoc.getType(field.schema)
       Field(
-        name = field.name,
+        name = Util.formatName(field.name),
         typeName = t.name,
         description = Util.toOption(field.doc),
         required = t.required
@@ -56,8 +56,8 @@ object Apidoc {
       case SchemaType.Boolean => Type("boolean")
       case SchemaType.Bytes => sys.error("apidoc does not support bytes type")
       case SchemaType.Double => Type("double")
-      case SchemaType.Enum => Type(schema.getName)
-      case SchemaType.Fixed => Type("decimal")
+      case SchemaType.Enum => Type(Util.formatName(schema.getName))
+      case SchemaType.Fixed => Type(Util.formatName(schema.getName))
       case SchemaType.Float => Type("double")
       case SchemaType.Int => Type("integer")
       case SchemaType.Long => Type("long")
@@ -84,7 +84,7 @@ object Apidoc {
           }
         }
       }
-      case SchemaType.Record => Type(schema.getName)
+      case SchemaType.Record => Type(Util.formatName(schema.getName))
     }
   }
 

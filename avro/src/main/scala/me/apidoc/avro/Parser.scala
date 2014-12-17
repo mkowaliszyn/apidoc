@@ -32,7 +32,7 @@ private[avro] case class Builder() {
   }
 
   def addModel(name: String, description: Option[String], fields: Seq[Apidoc.Field]) {
-    models += (name ->
+    models += (Util.formatName(name) ->
       JsObject(
         Seq(
           description.map { v => "description" -> JsString(v) },
@@ -59,7 +59,7 @@ private[avro] case class Builder() {
   }
 
   def addEnum(name: String, description: Option[String], values: Seq[String]) {
-    enums += (name ->
+    enums += (Util.formatName(name) ->
       JsObject(
         Seq(
           description.map { v => "description" -> JsString(v) },
