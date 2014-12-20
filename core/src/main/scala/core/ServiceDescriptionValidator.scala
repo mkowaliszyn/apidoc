@@ -564,6 +564,10 @@ case class ServiceDescriptionValidator(apiJson: String) {
                   None
                 }
 
+                case Some(ParsedDatatype.Singleton(Type(kind, name))) => {
+                  Some(errorTemplate.format(kind))
+                }
+
               }
             }
           }
